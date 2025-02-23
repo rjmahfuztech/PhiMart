@@ -7,11 +7,21 @@ from product.serializers import ProductSerializers,CategorySerializers
 from django.db.models import Count
 
 # Create your views here.
-@api_view()
+@api_view(['GET', 'POST'])
 def view_products(request):
-    products = Product.objects.select_related('category').all()
-    serializer = ProductSerializers(products, many=True, context={'request': request})
-    return Response(serializer.data)
+    if request.method == 'GET':
+        products = Product.objects.select_related('category').all()
+        serializer = ProductSerializers(products, many=True)
+        return Response(serializer.data)
+    
+    if request.method == 'POST':
+        serializer = ProductSerializers(data=request.data) # Deserializer
+        if serializer.is_valid():
+            print(serializer.validated_data)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view()
@@ -21,11 +31,21 @@ def view_specific_product(request, id):
     return Response(serializer.data)
 
 
-@api_view()
+@api_view(['GET', 'POST'])
 def view_category(request):
-    category = Category.objects.annotate(product_count=Count('products')).all()
-    serializer = CategorySerializers(category, many=True)
-    return Response(serializer.data)
+    if request.method == 'GET':
+        category = Category.objects.annotate(product_count=Count('products')).all()
+        serializer = CategorySerializers(category, many=True)
+        return Response(serializer.data)
+    
+    if request.method == 'POST':
+        serializer = CategorySerializers(data=request.data) # Deserializer
+        if serializer.is_valid():
+            print(serializer.validated_data)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view()
 def view_specific_category(request, pk):
