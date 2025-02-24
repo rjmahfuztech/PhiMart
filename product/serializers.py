@@ -14,7 +14,7 @@ class CategorySerializers(serializers.ModelSerializer):
 class ProductSerializers(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['id', 'name', 'price', 'stock', 'category', 'price_with_tax']
+        fields = ['id', 'name', 'description', 'price', 'stock', 'category', 'price_with_tax']
 
     price_with_tax = serializers.SerializerMethodField(method_name='calculate_tax')
 
@@ -25,4 +25,15 @@ class ProductSerializers(serializers.ModelSerializer):
         if price < 0:
             raise serializers.ValidationError('Price could not be negative.')
         return price
+    
+
+    # def create(self, validated_data):
+    #     product = Product(**validated_data)
+    #     product.others = 1
+    #     product.save()
+    #     return product
+
+    # def validate(self, attrs):
+    #     if attrs['password1'] != attrs['password2']:
+    #         raise serializers.ValidationError("Password didn't match.")
 

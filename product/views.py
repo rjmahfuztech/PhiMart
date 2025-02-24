@@ -29,11 +29,23 @@ def view_products(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-@api_view()
+@api_view(['GET', 'PUT', 'DELETE'])
 def view_specific_product(request, id):
     product = get_object_or_404(Product, pk=id)
-    serializer = ProductSerializers(product)
-    return Response(serializer.data)
+
+    if request.method == 'GET':
+        serializer = ProductSerializers(product)
+        return Response(serializer.data)
+    if request.method == 'PUT':
+        serializer = ProductSerializers(product, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+    if request.method == 'DELETE':
+        copy_of_product = product
+        product.delete()
+        serializer = ProductSerializers(copy_of_product)
+        return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['GET', 'POST'])
