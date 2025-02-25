@@ -6,6 +6,7 @@ from product.models import Product, Category
 from product.serializers import ProductSerializers,CategorySerializers
 from django.db.models import Count
 from rest_framework.views import APIView
+from rest_framework.generics import ListCreateAPIView
 
 # Create your views here.
 @api_view(['GET', 'POST'])
@@ -32,6 +33,16 @@ class ViewProducts(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+class ProductListCrateView(ListCreateAPIView):
+    queryset = Product.objects.select_related('category').all()
+    serializer_class = ProductSerializers
+
+    # def get_queryset(self):
+    #     return Product.objects.select_related('category').all()
+
+    # def get_serializer_class(self):
+    #     return ProductSerializers
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -99,6 +110,10 @@ class ViewCategory(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+class CategoryListCrateView(ListCreateAPIView):
+    queryset = Category.objects.annotate(product_count=Count('products')).all()
+    serializer_class = CategorySerializers
 
 @api_view(['GET', 'PUT', 'DELETE'])
 def view_specific_category(request, pk):
