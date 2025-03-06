@@ -11,6 +11,7 @@ from product.paginations import DefaultPagination
 # from rest_framework.permissions import IsAdminUser, AllowAny
 from api.permissions import IsAdminOrReadOnly, FullDjangoModelPermissions
 from rest_framework.permissions import DjangoModelPermissions, DjangoModelPermissionsOrAnonReadOnly
+from product.permissions import IsReviewAuthorOrReadOnly
 
 # Create your views here.
 
@@ -64,6 +65,13 @@ class CategoryViewSet(ModelViewSet):
 
 class ReviewViewSet(ModelViewSet):
     serializer_class = ReviewSerializer
+    permission_classes = [IsReviewAuthorOrReadOnly]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def perform_update(self, serializer):
+        serializer.save(user=self.request.user)
 
     def get_queryset(self):
         return Review.objects.filter(product_id=self.kwargs['product_pk'])
