@@ -64,13 +64,6 @@ class CartSerializer(serializers.ModelSerializer):
         return total_amount
 
 
-class OrderItemSerializer(serializers.ModelSerializer):
-    product = SimpleProductSerializer()
-    class Meta:
-        model = OrderItem
-        fields = ['id', 'product', 'quantity', 'price', 'total_price']
-
-
 class CreateOrderSerializer(serializers.Serializer):
     cart_id = serializers.UUIDField()
 
@@ -96,6 +89,19 @@ class CreateOrderSerializer(serializers.Serializer):
     
     def to_representation(self, instance):
         return OrderSerializer(instance).data
+
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    product = SimpleProductSerializer()
+    class Meta:
+        model = OrderItem
+        fields = ['id', 'product', 'quantity', 'price', 'total_price']
+
+
+class UpdateOrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = ['status']
 
 
 class OrderSerializer(serializers.ModelSerializer):
