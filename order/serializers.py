@@ -105,10 +105,10 @@ class UpdateOrderSerializer(serializers.ModelSerializer):
         
     def update(self, instance, validated_data):
         user = self.context['user']
-        new_status = validated_data['status']
+        # new_status = validated_data['status']
 
-        if new_status == Order.CANCELED:
-            return OrderService.cancel_order(order=instance, user=user)
+        # if new_status == Order.CANCELED:
+        #     return OrderService.cancel_order(order=instance, user=user)
         
         # Is Admin or not
         if not user.is_staff:
@@ -125,3 +125,7 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ['id', 'user', 'status', 'total_price', 'created_at', 'items']
+
+'''For Canceling an order Serializer'''
+class EmptySerializer(serializers.Serializer):
+    pass
