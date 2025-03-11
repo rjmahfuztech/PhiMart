@@ -103,21 +103,21 @@ class UpdateOrderSerializer(serializers.ModelSerializer):
         model = Order
         fields = ['status']
         
-    def update(self, instance, validated_data):
-        user = self.context['user']
-        # new_status = validated_data['status']
+    # def update(self, instance, validated_data):
+    #     user = self.context['user']
+    #     new_status = validated_data['status']
 
-        # if new_status == Order.CANCELED:
-        #     return OrderService.cancel_order(order=instance, user=user)
+    #     if new_status == Order.CANCELED:
+    #         return OrderService.cancel_order(order=instance, user=user)
         
-        # Is Admin or not
-        if not user.is_staff:
-            raise serializers.ValidationError({"detail": "You are not allowed to update this order"})
+    #     # Is Admin or not
+    #     if not user.is_staff:
+    #         raise serializers.ValidationError({"detail": "You are not allowed to update this order"})
         
-        # instance.status = new_status
-        # instance.save()
-        # return instance
-        return super().update(instance, validated_data)
+    #     # instance.status = new_status
+    #     # instance.save()
+    #     # return instance
+    #     return super().update(instance, validated_data)
 
 
 class OrderSerializer(serializers.ModelSerializer):
