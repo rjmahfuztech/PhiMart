@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from decimal import Decimal
-from product.models import Category, Product, Review
+from product.models import Category, Product, Review, ProductImage
 from django.contrib.auth import get_user_model
 
 
@@ -28,15 +28,10 @@ class ProductSerializer(serializers.ModelSerializer):
         return price
     
 
-    # def create(self, validated_data):
-    #     product = Product(**validated_data)
-    #     product.others = 1
-    #     product.save()
-    #     return product
-
-    # def validate(self, attrs):
-    #     if attrs['password1'] != attrs['password2']:
-    #         raise serializers.ValidationError("Password didn't match.")
+class ProductImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductImage
+        fields = ['id', 'image']
 
 class SimpleUserSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField(method_name='get_current_user_name')

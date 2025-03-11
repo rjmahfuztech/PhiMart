@@ -1,16 +1,14 @@
 from rest_framework.response import Response
 from rest_framework import status
-from product.models import Product, Category, Review
-from product.serializers import ProductSerializer,CategorySerializer, ReviewSerializer
+from product.models import Product, Category, Review, ProductImage
+from product.serializers import ProductSerializer,CategorySerializer, ReviewSerializer, ProductImageSerializer
 from django.db.models import Count
 from rest_framework.viewsets import ModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
 from product.filters import ProductFilter
 from rest_framework.filters import SearchFilter, OrderingFilter
 from product.paginations import DefaultPagination
-# from rest_framework.permissions import IsAdminUser, AllowAny
-from api.permissions import IsAdminOrReadOnly, FullDjangoModelPermissions
-from rest_framework.permissions import DjangoModelPermissions, DjangoModelPermissionsOrAnonReadOnly
+from api.permissions import IsAdminOrReadOnly
 from product.permissions import IsReviewAuthorOrReadOnly
 
 # Create your views here.
@@ -20,40 +18,29 @@ class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    # filterset_fields = ['category_id', 'price']
     filterset_class = ProductFilter
     pagination_class = DefaultPagination
     search_fields = ['name', 'description']
     ordering_fields = ['price', 'updated_at']
-    # permission_classes = [IsAdminUser]
     permission_classes = [IsAdminOrReadOnly]
-    # permission_classes = [DjangoModelPermissions]
-    # permission_classes = [FullDjangoModelPermissions]
-    # permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
 
-
-    # def get_permissions(self):
-    #     if self.request.method == 'GET':
-    #         return [AllowAny()]
-    #     return [IsAdminUser()]
     
+    '''for specif customization if needed'''
+    # def destroy(self, request, *args, **kwargs):
+    #     product = self.get_object()
+    #     if product.stock > 5:
+    #         return Response({'message': 'Product with stock more then 5 can not be deleted.'})
+    #     self.perform_destroy(product)
+    #     return Response(status=status.HTTP_204_NO_CONTENT)
 
+class ProductImageViewSet(ModelViewSet):
+    serializer_class = ProductImageSerializer
 
-    # def get_queryset(self):
-    #     queryset = Product.objects.all()
-    #     category_id = self.request.query_params.get('category_id')
-
-    #     if category_id is not None:
-    #         queryset = Product.objects.filter(category_id=category_id)
-    #     return queryset
+    def get_queryset(self):
+        return ProductImage.objects.filter(product_id=self.kwargs['product_pk'])
     
-    # for specif customization if needed
-    def destroy(self, request, *args, **kwargs):
-        product = self.get_object()
-        if product.stock > 5:
-            return Response({'message': 'Product with stock more then 5 can not be deleted.'})
-        self.perform_destroy(product)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    def perform_create(self, serializer):
+        serializer.save(product_id=self.kwargs['product_pk'])
 
 
 '''All in one using (ModelViewSet) [create, read, update, delete]'''
