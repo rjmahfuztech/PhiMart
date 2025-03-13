@@ -10,6 +10,7 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from product.paginations import DefaultPagination
 from api.permissions import IsAdminOrReadOnly
 from product.permissions import IsReviewAuthorOrReadOnly
+from drf_yasg.utils import swagger_auto_schema
 
 # Create your views here.
 
@@ -33,10 +34,22 @@ class ProductViewSet(ModelViewSet):
     def get_queryset(self):
         return Product.objects.prefetch_related('images').all()
     
+    @swagger_auto_schema(
+        operation_summary='Retrieve a list of products'        
+    )
     def list(self, request, *args, **kwargs):
         '''Retrieve all the products'''
         return super().list(request, *args, **kwargs)
     
+    @swagger_auto_schema(
+        operation_summary='Create a product by admin',
+        operation_description='This allow an admin to create a product',
+        request_body=ProductSerializer,
+        responses={
+            201: ProductSerializer,
+            400: 'Bad Request'
+        }
+    )
     def create(self, request, *args, **kwargs):
         '''Only authenticated admin can create product'''
         return super().create(request, *args, **kwargs)
