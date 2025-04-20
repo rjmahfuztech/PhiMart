@@ -188,7 +188,7 @@ DJOSER = {
     'EMAIL_FRONTEND_PROTOCOL': config('FRONTEND_PROTOCOL'),
     'EMAIL_FRONTEND_DOMAIN': config('FRONTEND_DOMAIN'),
     'EMAIL_FRONTEND_SITE_NAME': 'PhiMart',
-    'PASSWORD_RESET_CONFIRM_URL': 'password/reset/confirm/{uid}/{token}',
+    'PASSWORD_RESET_CONFIRM_URL': f"{config('FRONTEND_PROTOCOL')}://{config('FRONTEND_DOMAIN')}/password/reset/confirm/{{uid}}/{{token}}",
     'ACTIVATION_URL': 'activate/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL': True,
     'SERIALIZERS' : {
